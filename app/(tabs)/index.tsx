@@ -1,63 +1,117 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { StyleSheet, SafeAreaView, TouchableOpacity, FlatList, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+
+// Sample data - you would replace this with your actual data storage
+const sampleHabits = [
+  { id: '1', name: 'Daily Exercise', streak: 5 },
+  { id: '2', name: 'Read 30 minutes', streak: 12 },
+  { id: '3', name: 'Drink 8 glasses of water', streak: 3 },
+];
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const [habits, setHabits] = useState(sampleHabits);
+
+  const navigateToCreateHabit = () => {
+    router.push("/create-habit");
+  };
+
+  const navigateToHabitDetails = (habitId) => {
+    router.push({
+      pathname: "/habit-details",
+      params: { id: habitId }
+    });
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <SafeAreaView style={styles.container}>
+      <ThemedView style={styles.content}>
+        <View style={styles.header}>
+          <ThemedText style={styles.title}>My Habits</ThemedText>
+          <TouchableOpacity 
+            style={styles.createButton} 
+            onPress={navigateToCreateHabit}
+          >
+            <ThemedText style={styles.buttonText}>+ New Habit</ThemedText>
+          </TouchableOpacity>
+        </View>
+
+        <FlatList
+          data={habits}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity 
+              style={styles.habitItem}
+              onPress={() => navigateToHabitDetails(item.id)}
+            >
+              <ThemedText style={styles.habitName}>{item.name}</ThemedText>
+              <ThemedText style={styles.habitStreak}>{item.streak} day streak</ThemedText>
+            </TouchableOpacity>
+          )}
+          style={styles.habitsList}
+          contentContainerStyle={styles.habitsListContent}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  createButton: {
+    backgroundColor: "#4CAF50",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  habitsList: {
+    flex: 1,
+  },
+  habitsListContent: {
+    paddingBottom: 20,
+  },
+  habitItem: {
+    padding: 16,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  habitName: {
+    fontSize: 18,
+    fontWeight: "500",
+    marginBottom: 4,
+  },
+  habitStreak: {
+    fontSize: 14,
+    color: "#666",
+  },
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   stepContainer: {
@@ -69,6 +123,6 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
   },
 });
