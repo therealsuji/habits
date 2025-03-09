@@ -1,66 +1,102 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, SafeAreaView, TouchableOpacity, View, FlatList, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  View,
+  FlatList,
+  Dimensions,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-
+import {
+  buttonStyles,
+  containerStyles,
+  globalStyles,
+} from "@/styles/globalStyles";
 // Sample data - you would replace this with your actual data retrieval
-const getHabitById = (id) => {
+const getHabitById = (id: string) => {
   const habits = [
-    { id: '1', name: 'Daily Exercise', streak: 5, description: 'Exercise for at least 30 minutes every day' },
-    { id: '2', name: 'Read 30 minutes', streak: 12, description: 'Read books or articles for personal growth' },
-    { id: '3', name: 'Drink 8 glasses of water', streak: 3, description: 'Stay hydrated throughout the day' },
+    {
+      id: "1",
+      name: "Daily Exercise",
+      streak: 5,
+      description: "Exercise for at least 30 minutes every day",
+    },
+    {
+      id: "2",
+      name: "Read 30 minutes",
+      streak: 12,
+      description: "Read books or articles for personal growth",
+    },
+    {
+      id: "3",
+      name: "Drink 8 glasses of water",
+      streak: 3,
+      description: "Stay hydrated throughout the day",
+    },
   ];
-  return habits.find(habit => habit.id === id);
+  return habits.find((habit) => habit.id === id);
 };
 
 // Promotion tips
 const promotionTips = [
   {
-    id: '1',
-    title: 'Set a specific time',
-    description: 'Schedule your habit at the same time each day to build consistency.'
+    id: "1",
+    title: "Set a specific time",
+    description:
+      "Schedule your habit at the same time each day to build consistency.",
   },
   {
-    id: '2',
-    title: 'Start small',
-    description: 'Begin with a small version of your habit that takes less than two minutes to complete.'
+    id: "2",
+    title: "Start small",
+    description:
+      "Begin with a small version of your habit that takes less than two minutes to complete.",
   },
   {
-    id: '3',
-    title: 'Stack habits',
-    description: 'Attach your new habit to an existing habit you already do consistently.'
+    id: "3",
+    title: "Stack habits",
+    description:
+      "Attach your new habit to an existing habit you already do consistently.",
   },
   {
-    id: '4',
-    title: 'Environment design',
-    description: 'Modify your environment to make good habits obvious and bad habits invisible.'
+    id: "4",
+    title: "Environment design",
+    description:
+      "Modify your environment to make good habits obvious and bad habits invisible.",
   },
   {
-    id: '5',
-    title: 'Track your progress',
-    description: 'Use a habit tracker to visualize your progress and maintain motivation.'
+    id: "5",
+    title: "Track your progress",
+    description:
+      "Use a habit tracker to visualize your progress and maintain motivation.",
   },
 ];
 
 export default function HabitDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-  const [habit, setHabit] = useState(null);
-  const [activeTab, setActiveTab] = useState('details');
+  const [habit, setHabit] = useState<{
+    id: string;
+    name: string;
+    streak: number;
+    description: string;
+  } | null>(null);
+  const [activeTab, setActiveTab] = useState("details");
 
   useEffect(() => {
     if (id) {
       const habitData = getHabitById(id.toString());
-      setHabit(habitData);
+      setHabit(habitData || null);
     }
   }, [id]);
 
   if (!habit) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ThemedView style={styles.content}>
+      <SafeAreaView style={containerStyles.container}>
+        <ThemedView style={containerStyles.content}>
           <ThemedText>Loading habit details...</ThemedText>
         </ThemedView>
       </SafeAreaView>
@@ -68,49 +104,77 @@ export default function HabitDetailsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ThemedView style={styles.content}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+    <SafeAreaView style={containerStyles.container}>
+      <ThemedView style={containerStyles.content}>
+        <View style={globalStyles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={buttonStyles.backButton}
+          >
             <ThemedText>← Back</ThemedText>
           </TouchableOpacity>
-          
-          <ThemedText style={styles.title}>{habit.name}</ThemedText>
         </View>
-        
+        <View>
+          <ThemedText style={globalStyles.headerTitle}>{habit.name}</ThemedText>
+        </View>
+
         <View style={styles.streakCard}>
           <ThemedText style={styles.streakText}>Current Streak</ThemedText>
-          <ThemedText style={styles.streakCount}>{habit.streak} days</ThemedText>
+          <ThemedText style={styles.streakCount}>
+            {habit.streak} days
+          </ThemedText>
         </View>
-        
+
         <View style={styles.tabContainer}>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'details' && styles.activeTab]} 
-            onPress={() => setActiveTab('details')}
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "details" && styles.activeTab]}
+            onPress={() => setActiveTab("details")}
           >
-            <ThemedText style={[styles.tabText, activeTab === 'details' && styles.activeTabText]}>Details</ThemedText>
+            <ThemedText
+              style={[
+                styles.tabText,
+                activeTab === "details" && styles.activeTabText,
+              ]}
+            >
+              Details
+            </ThemedText>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'promote' && styles.activeTab]} 
-            onPress={() => setActiveTab('promote')}
+
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "promote" && styles.activeTab]}
+            onPress={() => setActiveTab("promote")}
           >
-            <ThemedText style={[styles.tabText, activeTab === 'promote' && styles.activeTabText]}>Promotion Tips</ThemedText>
+            <ThemedText
+              style={[
+                styles.tabText,
+                activeTab === "promote" && styles.activeTabText,
+              ]}
+            >
+              Promotion Tips
+            </ThemedText>
           </TouchableOpacity>
         </View>
-        
-        {activeTab === 'details' ? (
+
+        {activeTab === "details" ? (
           <View style={styles.detailsContainer}>
             <ThemedText style={styles.sectionTitle}>Description</ThemedText>
-            <ThemedText style={styles.description}>{habit.description}</ThemedText>
-            
+            <ThemedText style={styles.description}>
+              {habit.description}
+            </ThemedText>
+
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.actionButton}>
-                <ThemedText style={styles.actionButtonText}>Mark Complete</ThemedText>
+              <TouchableOpacity style={buttonStyles.actionButton}>
+                <ThemedText style={buttonStyles.actionButtonText}>
+                  Mark Complete
+                </ThemedText>
               </TouchableOpacity>
-              
-              <TouchableOpacity style={[styles.actionButton, styles.editButton]}>
-                <ThemedText style={styles.actionButtonText}>Edit Habit</ThemedText>
+
+              <TouchableOpacity
+                style={[buttonStyles.actionButton, buttonStyles.editButton]}
+              >
+                <ThemedText style={buttonStyles.actionButtonText}>
+                  Edit Habit
+                </ThemedText>
               </TouchableOpacity>
             </View>
           </View>
@@ -121,7 +185,9 @@ export default function HabitDetailsScreen() {
             renderItem={({ item }) => (
               <View style={styles.tipCard}>
                 <ThemedText style={styles.tipTitle}>{item.title}</ThemedText>
-                <ThemedText style={styles.tipDescription}>{item.description}</ThemedText>
+                <ThemedText style={styles.tipDescription}>
+                  {item.description}
+                </ThemedText>
               </View>
             )}
             contentContainerStyle={styles.tipsList}
@@ -133,35 +199,22 @@ export default function HabitDetailsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    marginBottom: 20,
-  },
-  backButton: {
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
   streakCard: {
     backgroundColor: "#4CAF50",
     borderRadius: 10,
     padding: 20,
     alignItems: "center",
     marginBottom: 20,
+    width: '100%',
   },
   streakText: {
     color: "white",
     fontSize: 16,
+    textAlign: "center",
+    flexShrink: 1,
   },
   streakCount: {
+    paddingTop: 10,
     color: "white",
     fontSize: 32,
     fontWeight: "bold",
@@ -205,23 +258,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  actionButton: {
-    backgroundColor: "#4CAF50",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    flex: 1,
-    marginHorizontal: 5,
-    alignItems: "center",
-  },
-  editButton: {
-    backgroundColor: "#2196F3",
-  },
-  actionButtonText: {
-    color: "white",
-    fontWeight: "500",
-    fontSize: 16,
-  },
   tipsList: {
     paddingBottom: 20,
   },
@@ -240,4 +276,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
   },
-}); 
+});
