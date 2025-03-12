@@ -6,8 +6,8 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Suspense, useState } from "react";
-import { useObservable, useSelector } from "@legendapp/state/react";
+import { Suspense } from "react";
+import { useSelector } from "@legendapp/state/react";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -20,10 +20,7 @@ import { habitStore$ } from "@/store/habitStore";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const state$ = useObservable(habitStore$);
-  const habits = useSelector(state$.habits, { suspense: true });
-
-  console.log("Kumak da", habits);
+  const habits = useSelector(habitStore$.habits, { suspense: true });
 
   const navigateToCreateHabit = () => {
     router.push("/create-habit");

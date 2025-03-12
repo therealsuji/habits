@@ -22,13 +22,10 @@ import { habitStore$ } from "@/store/habitStore";
 export default function HabitDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-
-  const habit = useObservable(() => habitStore$.habits.get(id as string)).get();
+  const habitId = id as string;
+  const habit = useObservable(() => habitStore$.getHabit(habitId)).get();
   const [activeTab, setActiveTab] = useState("details");
 
-  const deleteMe = () => {
-    habitStore$.deleteHabit(habit.id);
-  };
   if (!habit) {
     return (
       <SafeAreaView style={containerStyles.container}>
@@ -48,11 +45,6 @@ export default function HabitDetailsScreen() {
             style={buttonStyles.backButton}
           >
             <ThemedText>← Back</ThemedText>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <TouchableOpacity onPress={deleteMe}>
-            <ThemedText>Delete</ThemedText>
           </TouchableOpacity>
         </View>
         <View>

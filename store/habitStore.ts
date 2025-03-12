@@ -1,24 +1,8 @@
-import { observable } from "@legendapp/state";
+import { Observable, observable } from "@legendapp/state";
 import { observablePersistSqlite } from "@legendapp/state/persist-plugins/expo-sqlite";
 import { configureSynced, syncObservable } from "@legendapp/state/sync";
 import Storage from "expo-sqlite/kv-store";
 import uuid from "react-native-uuid"; // Importing uuid for unique ID generation
-
-const persistOptions = configureSynced({
-  persist: {
-    plugin: observablePersistSqlite(Storage),
-    transform: {
-      load: (value) => {
-         console.log("Loading Value", value)
-        return value;
-      },
-      save: (value) => {
-         
-        return value;
-      },
-    },
-  },
-});
 
 interface Habit {
   id: string;
@@ -27,14 +11,15 @@ interface Habit {
   description: string;
 }
 interface HabitStore {
-  habits: Map<string, Habit>;
+  habits: Habit[];
   addHabit: (habit: Omit<Habit, "id" | "streak">) => void;
   updateHabit: (habit: Habit) => void;
   deleteHabit: (id: string) => void;
+  getHabit: (id: string) => Habit | undefined;
 }
 
-export const habitStore$ = observable<HabitStore>({
-  habits: new Map(),
+export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
+  habits: [],
   addHabit: (habit) => {
     const id = uuid.v4() as string; // Generate unique ID
     const newHabit = {
@@ -43,23 +28,27 @@ export const habitStore$ = observable<HabitStore>({
       streak: 0, // Initialize streak to 0
     };
 
-    habitStore$.set((state) => {
-      console.log("setting habit", state.habits);
-      state.habits.set(id, newHabit);
-      return state;
-    });
+    habitStore$.habits.push(newHabit);
   },
   updateHabit: (habit: Habit) => {
-    habitStore$.set((state) => {
-      state.habits.set(habit.id, habit);
-      return state;
-    });
+    const index = habitStore$.habits.get().findIndex((h) => h.id === habit.id);
+    //TODO: CHECK IF THIS WORKS 
+    habitStore$.habits.get()[index] = habit;
   },
   deleteHabit: (id: string) => {
     habitStore$.set((state) => {
-      state.habits.delete(id);
+      state.habits = state.habits.filter((habit) => habit.id !== id);
       return state;
     });
+  },
+  getHabit: (id) => {
+    return habitStore$.habits.get().find((habit) => habit.id === id);
+  },
+});
+
+const persistOptions = configureSynced({
+  persist: {
+    plugin: observablePersistSqlite(Storage),
   },
 });
 
