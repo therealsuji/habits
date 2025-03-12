@@ -6,7 +6,8 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useObservable, useSelector } from "@legendapp/state/react";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -15,23 +16,20 @@ import {
   buttonStyles,
   containerStyles,
 } from "@/styles/globalStyles";
-
-// Sample data - you would replace this with your actual data storage
-const sampleHabits = [
-  { id: "1", name: "Daily Exercise", streak: 5 },
-  { id: "2", name: "Read 30 minutes", streak: 12 },
-  { id: "3", name: "Drink 8 glasses of water", streak: 3 },
-];
+import { habitStore$ } from "@/store/habitStore";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [habits, setHabits] = useState(sampleHabits);
+  const state$ = useObservable(habitStore$);
+  const habits = useSelector(state$.habits, { suspense: true });
+
+  console.log("Kumak da", habits);
 
   const navigateToCreateHabit = () => {
     router.push("/create-habit");
   };
 
-  const navigateToHabitDetails = (habitId) => {
+  const navigateToHabitDetails = (habitId: string) => {
     router.push({
       pathname: "/habit-details",
       params: { id: habitId },
@@ -52,28 +50,31 @@ export default function HomeScreen() {
             </ThemedText>
           </TouchableOpacity>
         </View>
-
-        <FlatList
-          data={habits}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.habitItem}
-              onPress={() => navigateToHabitDetails(item.id)}
-            >
-              <ThemedText style={styles.habitName}>{item.name}</ThemedText>
-              <ThemedText style={styles.habitStreak}>
-                {item.streak} day streak
-              </ThemedText>
-            </TouchableOpacity>
-          )}
-          style={styles.habitsList}
-          contentContainerStyle={styles.habitsListContent}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <FlatList
+            ListEmptyComponent={<ThemedText>No habits yet.</ThemedText>}
+            data={Array.from(habits.values())}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.habitItem}
+                onPress={() => navigateToHabitDetails(item.id)}
+              >
+                <ThemedText style={styles.habitName}>{item.name}</ThemedText>
+                <ThemedText style={styles.habitStreak}>
+                  {item.streak} day streak
+                </ThemedText>
+              </TouchableOpacity>
+            )}
+            style={styles.habitsList}
+            contentContainerStyle={styles.habitsListContent}
+          />
+        </Suspense>
       </ThemedView>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   habitsList: {
     flex: 1,

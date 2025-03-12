@@ -17,9 +17,10 @@ import {
   globalStyles,
   formStyles,
 } from "@/styles/globalStyles";
-
+import { habitStore$ } from "@/store/habitStore";
 export default function CreateHabitScreen() {
   const router = useRouter();
+
   const [habitName, setHabitName] = useState("");
   const [habitDescription, setHabitDescription] = useState("");
 
@@ -27,11 +28,12 @@ export default function CreateHabitScreen() {
   const frequencyOptions = ["daily", "weekly", "monthly"];
 
   const handleCreate = () => {
-    // Here you would save the new habit to your storage
-    console.log("Creating habit:", { habitName, habitDescription, frequency });
+    habitStore$.addHabit({
+      name: habitName,
+      description: habitDescription,
+    });
 
-    // Navigate back to home screen
-    router.back();
+     router.back();
   };
 
   return (

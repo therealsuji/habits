@@ -16,83 +16,19 @@ import {
   containerStyles,
   globalStyles,
 } from "@/styles/globalStyles";
-// Sample data - you would replace this with your actual data retrieval
-const getHabitById = (id: string) => {
-  const habits = [
-    {
-      id: "1",
-      name: "Daily Exercise",
-      streak: 5,
-      description: "Exercise for at least 30 minutes every day",
-    },
-    {
-      id: "2",
-      name: "Read 30 minutes",
-      streak: 12,
-      description: "Read books or articles for personal growth",
-    },
-    {
-      id: "3",
-      name: "Drink 8 glasses of water",
-      streak: 3,
-      description: "Stay hydrated throughout the day",
-    },
-  ];
-  return habits.find((habit) => habit.id === id);
-};
-
-// Promotion tips
-const promotionTips = [
-  {
-    id: "1",
-    title: "Set a specific time",
-    description:
-      "Schedule your habit at the same time each day to build consistency.",
-  },
-  {
-    id: "2",
-    title: "Start small",
-    description:
-      "Begin with a small version of your habit that takes less than two minutes to complete.",
-  },
-  {
-    id: "3",
-    title: "Stack habits",
-    description:
-      "Attach your new habit to an existing habit you already do consistently.",
-  },
-  {
-    id: "4",
-    title: "Environment design",
-    description:
-      "Modify your environment to make good habits obvious and bad habits invisible.",
-  },
-  {
-    id: "5",
-    title: "Track your progress",
-    description:
-      "Use a habit tracker to visualize your progress and maintain motivation.",
-  },
-];
+import { useObservable } from "@legendapp/state/react";
+import { habitStore$ } from "@/store/habitStore";
 
 export default function HabitDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-  const [habit, setHabit] = useState<{
-    id: string;
-    name: string;
-    streak: number;
-    description: string;
-  } | null>(null);
+
+  const habit = useObservable(() => habitStore$.habits.get(id as string)).get();
   const [activeTab, setActiveTab] = useState("details");
 
-  useEffect(() => {
-    if (id) {
-      const habitData = getHabitById(id.toString());
-      setHabit(habitData || null);
-    }
-  }, [id]);
-
+  const deleteMe = () => {
+    habitStore$.deleteHabit(habit.id);
+  };
   if (!habit) {
     return (
       <SafeAreaView style={containerStyles.container}>
@@ -112,6 +48,11 @@ export default function HabitDetailsScreen() {
             style={buttonStyles.backButton}
           >
             <ThemedText>← Back</ThemedText>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <TouchableOpacity onPress={deleteMe}>
+            <ThemedText>Delete</ThemedText>
           </TouchableOpacity>
         </View>
         <View>
@@ -139,60 +80,30 @@ export default function HabitDetailsScreen() {
               Details
             </ThemedText>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.tab, activeTab === "promote" && styles.activeTab]}
-            onPress={() => setActiveTab("promote")}
-          >
-            <ThemedText
-              style={[
-                styles.tabText,
-                activeTab === "promote" && styles.activeTabText,
-              ]}
-            >
-              Promotion Tips
-            </ThemedText>
-          </TouchableOpacity>
         </View>
 
-        {activeTab === "details" ? (
-          <View style={styles.detailsContainer}>
-            <ThemedText style={styles.sectionTitle}>Description</ThemedText>
-            <ThemedText style={styles.description}>
-              {habit.description}
-            </ThemedText>
+        <View style={styles.detailsContainer}>
+          <ThemedText style={styles.sectionTitle}>Description</ThemedText>
+          <ThemedText style={styles.description}>
+            {habit.description}
+          </ThemedText>
 
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={buttonStyles.actionButton}>
-                <ThemedText style={buttonStyles.actionButtonText}>
-                  Mark Complete
-                </ThemedText>
-              </TouchableOpacity>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={buttonStyles.actionButton}>
+              <ThemedText style={buttonStyles.actionButtonText}>
+                Mark Complete
+              </ThemedText>
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[buttonStyles.actionButton, buttonStyles.editButton]}
-              >
-                <ThemedText style={buttonStyles.actionButtonText}>
-                  Edit Habit
-                </ThemedText>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={[buttonStyles.actionButton, buttonStyles.editButton]}
+            >
+              <ThemedText style={buttonStyles.actionButtonText}>
+                Edit Habit
+              </ThemedText>
+            </TouchableOpacity>
           </View>
-        ) : (
-          <FlatList
-            data={promotionTips}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.tipCard}>
-                <ThemedText style={styles.tipTitle}>{item.title}</ThemedText>
-                <ThemedText style={styles.tipDescription}>
-                  {item.description}
-                </ThemedText>
-              </View>
-            )}
-            contentContainerStyle={styles.tipsList}
-          />
-        )}
+        </View>
       </ThemedView>
     </SafeAreaView>
   );
@@ -205,7 +116,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
   },
   streakText: {
     color: "white",
