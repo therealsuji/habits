@@ -56,16 +56,15 @@ export const formStyles = StyleSheet.create({
   },
 });
 
-
 export const buttonStyles = StyleSheet.create({
-  createButton: {
-    backgroundColor: "#4CAF50",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  // createButton: {
+  //   backgroundColor: "#4CAF50",
+  //   paddingHorizontal: 16,
+  //   paddingVertical: 8,
+  //   borderRadius: 20,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
   disabledButton: {
     backgroundColor: "#cccccc",
   },

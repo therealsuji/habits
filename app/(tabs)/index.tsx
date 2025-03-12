@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  FlatList,
-  View,
-} from "react-native";
+import { SafeAreaView, TouchableOpacity, FlatList, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Suspense } from "react";
 import { useSelector } from "@legendapp/state/react";
@@ -39,9 +33,8 @@ export default function HomeScreen() {
         <View style={globalStyles.header}>
           <ThemedText style={globalStyles.headerTitle}>My Habits</ThemedText>
           <TouchableOpacity
-            style={buttonStyles.createButton}
-            onPress={navigateToCreateHabit}
-          >
+            className='bg-primary px-4 py-2 rounded-full flex items-center justify-center'
+            onPress={navigateToCreateHabit}>
             <ThemedText style={buttonStyles.createButtonText}>
               + New Habit
             </ThemedText>
@@ -54,44 +47,20 @@ export default function HomeScreen() {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={styles.habitItem}
-                onPress={() => navigateToHabitDetails(item.id)}
-              >
-                <ThemedText style={styles.habitName}>{item.name}</ThemedText>
-                <ThemedText style={styles.habitStreak}>
+                className='p-4 bg-gray-100 dark:bg-gray-800 rounded-lg mb-3'
+                onPress={() => navigateToHabitDetails(item.id)}>
+                <ThemedText className='text-lg font-medium mb-1'>
+                  {item.name}
+                </ThemedText>
+                <ThemedText className='text-sm text-gray-500 dark:text-gray-400'>
                   {item.streak} day streak
                 </ThemedText>
               </TouchableOpacity>
             )}
-            style={styles.habitsList}
-            contentContainerStyle={styles.habitsListContent}
+            className='flex-1 pb-5'
           />
         </Suspense>
       </ThemedView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  habitsList: {
-    flex: 1,
-  },
-  habitsListContent: {
-    paddingBottom: 20,
-  },
-  habitItem: {
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  habitName: {
-    fontSize: 18,
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  habitStreak: {
-    fontSize: 14,
-    color: "#666",
-  },
-});
