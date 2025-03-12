@@ -32,13 +32,12 @@ export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
   },
   updateHabit: (habit: Habit) => {
     const index = habitStore$.habits.get().findIndex((h) => h.id === habit.id);
-    //TODO: CHECK IF THIS WORKS 
+    //TODO: CHECK IF THIS WORKS
     habitStore$.habits.get()[index] = habit;
   },
   deleteHabit: (id: string) => {
-    habitStore$.set((state) => {
-      state.habits = state.habits.filter((habit) => habit.id !== id);
-      return state;
+    habitStore$.assign({
+      habits: habitStore$.habits.get().filter((habit) => habit.id !== id),
     });
   },
   getHabit: (id) => {
