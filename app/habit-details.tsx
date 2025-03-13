@@ -6,6 +6,7 @@ import {
   View,
   FlatList,
   Dimensions,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
@@ -25,6 +26,22 @@ export default function HabitDetailsScreen() {
   const habitId = id as string;
   const habit = useObservable(() => habitStore$.getHabit(habitId)).get();
   const [activeTab, setActiveTab] = useState("details");
+
+  const deleteHabit = () => {
+    habitStore$.deleteHabit(habitId);
+    router.back();
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Delete Habit",
+      "Are you sure you want to delete this habit? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", onPress: deleteHabit, style: "destructive" }
+      ]
+    );
+  };
 
   if (!habit) {
     return (
@@ -92,6 +109,17 @@ export default function HabitDetailsScreen() {
             >
               <ThemedText style={buttonStyles.actionButtonText}>
                 Edit Habit
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.deleteButtonContainer}>
+            <TouchableOpacity 
+              style={styles.deleteButton}
+              onPress={confirmDelete}
+            >
+              <ThemedText style={styles.deleteButtonText}>
+                Delete Habit
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -178,5 +206,20 @@ const styles = StyleSheet.create({
   tipDescription: {
     fontSize: 16,
     lineHeight: 22,
+  },
+  deleteButtonContainer: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  deleteButton: {
+    backgroundColor: '#ff5252',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });
