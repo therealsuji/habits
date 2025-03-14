@@ -25,12 +25,20 @@ export default function HabitDetailsScreen() {
   const { id } = useLocalSearchParams();
   const habitId = id as string;
   const habit = use$(habitStore$.getHabit(habitId));
-
+  const entryForDate = use$(habitStore$.getEntryForDate(habitId, new Date()));
   const [activeTab, setActiveTab] = useState("details");
 
   const deleteHabit = () => {
     habitStore$.deleteHabit(habitId);
     router.back();
+  };
+
+  const markHabitComplete = () => {
+    habitStore$.addHabitEntry({
+      habitId,
+      date: new Date(),
+      completed: true,
+    });
   };
 
   const confirmDelete = () => {
@@ -39,7 +47,7 @@ export default function HabitDetailsScreen() {
       "Are you sure you want to delete this habit? This action cannot be undone.",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Delete", onPress: deleteHabit, style: "destructive" }
+        { text: "Delete", onPress: deleteHabit, style: "destructive" },
       ]
     );
   };
@@ -99,7 +107,12 @@ export default function HabitDetailsScreen() {
           </ThemedText>
 
           <View style={styles.buttonRow}>
-            <TouchableOpacity style={buttonStyles.actionButton}>
+            <TouchableOpacity
+              style={buttonStyles.actionButton}
+              className={"disabled:opacity-50"}
+              onPress={markHabitComplete}
+              disabled={!!entryForDate}
+            >
               <ThemedText style={buttonStyles.actionButtonText}>
                 Mark Complete
               </ThemedText>
@@ -114,9 +127,9 @@ export default function HabitDetailsScreen() {
               </ThemedText>
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.deleteButtonContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.deleteButton}
               onPress={confirmDelete}
             >
@@ -211,17 +224,17 @@ const styles = StyleSheet.create({
   },
   deleteButtonContainer: {
     marginTop: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   deleteButton: {
-    backgroundColor: '#ff5252',
+    backgroundColor: "#ff5252",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
   },
   deleteButtonText: {
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
     fontSize: 16,
   },
 });

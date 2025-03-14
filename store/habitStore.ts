@@ -3,7 +3,7 @@ import { observablePersistSqlite } from "@legendapp/state/persist-plugins/expo-s
 import { configureSynced, syncObservable } from "@legendapp/state/sync";
 import Storage from "expo-sqlite/kv-store";
 import uuid from "react-native-uuid"; // Importing uuid for unique ID generation
-
+import { isSameDay } from "date-fns";
 interface Habit {
   id: string;
   name: string;
@@ -27,6 +27,10 @@ interface HabitStore {
   deleteHabit: (id: string) => void;
   getHabit: (id: string) => Observable<Habit> | undefined;
   addHabitEntry: (habitEntry: Omit<HabitEntry, "id">) => void;
+  getEntryForDate: (
+    habitId: string,
+    date: Date
+  ) => Observable<HabitEntry> | undefined;
 }
 
 export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
@@ -36,9 +40,18 @@ export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
     const newHabitEntry = {
       ...habitEntry,
       id,
-
     };
-    habitStore$.getHabit(habitEntry.habitId)?.entries.push(newHabitEntry);
+    const isEntryForDate = habitStore$.getEntryForDate(
+      habitEntry.habitId,
+      habitEntry.date
+    );
+    if (!isEntryForDate) {
+      const habit = habitStore$.getHabit(habitEntry.habitId);
+      if (habit) {
+        habit.entries.push(newHabitEntry);
+        habit.streak.set(habit.streak.get() + 1);
+      }
+    }
   },
   addHabit: (habit) => {
     const id = uuid.v4() as string; // Generate unique ID
@@ -56,11 +69,20 @@ export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
     habitStore$.habits[index].set(habit);
   },
   deleteHabit: (id: string) => {
-    const index = habitStore$.habits.get().findIndex((habit) => habit.id === id);
+    const index = habitStore$.habits
+      .get()
+      .findIndex((habit) => habit.id === id);
     habitStore$.habits[index].delete();
   },
   getHabit: (id) => {
     return habitStore$.habits.find((habit) => habit.id.get() === id);
+  },
+  getEntryForDate: (habitId: string, date: Date) => {
+    const habit = habitStore$.getHabit(habitId);
+    if (habit) {
+      return habit.entries.find((entry) => isSameDay(entry.date.get(), date));
+    }
+    return undefined;
   },
 });
 
