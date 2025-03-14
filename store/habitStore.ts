@@ -9,39 +9,58 @@ interface Habit {
   name: string;
   streak: number;
   description: string;
+  entries: HabitEntry[];
 }
+
+interface HabitEntry {
+  id: string;
+  habitId: string;
+  date: Date;
+  completed: boolean;
+  note?: string;
+}
+
 interface HabitStore {
   habits: Habit[];
-  addHabit: (habit: Omit<Habit, "id" | "streak">) => void;
+  addHabit: (habit: Omit<Habit, "id" | "streak" | "entries">) => void;
   updateHabit: (habit: Habit) => void;
   deleteHabit: (id: string) => void;
-  getHabit: (id: string) => Habit | undefined;
+  getHabit: (id: string) => Observable<Habit> | undefined;
+  addHabitEntry: (habitEntry: Omit<HabitEntry, "id">) => void;
 }
 
 export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
   habits: [],
+  addHabitEntry: (habitEntry) => {
+    const id = uuid.v4() as string; // Generate unique ID
+    const newHabitEntry = {
+      ...habitEntry,
+      id,
+
+    };
+    habitStore$.getHabit(habitEntry.habitId)?.entries.push(newHabitEntry);
+  },
   addHabit: (habit) => {
     const id = uuid.v4() as string; // Generate unique ID
     const newHabit = {
       ...habit,
       id,
       streak: 0, // Initialize streak to 0
+      entries: [],
     };
 
     habitStore$.habits.push(newHabit);
   },
   updateHabit: (habit: Habit) => {
     const index = habitStore$.habits.get().findIndex((h) => h.id === habit.id);
-    //TODO: CHECK IF THIS WORKS
-    habitStore$.habits.get()[index] = habit;
+    habitStore$.habits[index].set(habit);
   },
   deleteHabit: (id: string) => {
-    habitStore$.assign({
-      habits: habitStore$.habits.get().filter((habit) => habit.id !== id),
-    });
+    const index = habitStore$.habits.get().findIndex((habit) => habit.id === id);
+    habitStore$.habits[index].delete();
   },
   getHabit: (id) => {
-    return habitStore$.habits.get().find((habit) => habit.id === id);
+    return habitStore$.habits.find((habit) => habit.id.get() === id);
   },
 });
 

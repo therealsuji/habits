@@ -33,7 +33,7 @@ export default function CreateHabitScreen() {
       description: habitDescription,
     });
 
-     router.back();
+    router.back();
   };
 
   return (
@@ -110,16 +110,11 @@ export default function CreateHabitScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                buttonStyles.createButton,
-                !habitName.trim() && buttonStyles.disabledButton,
-              ]}
+              className="bg-green-500 rounded-md p-2 flex items-center justify-center"
               onPress={handleCreate}
               disabled={!habitName.trim()}
             >
-              <ThemedText style={buttonStyles.createButtonText}>
-                Create Habit
-              </ThemedText>
+              <ThemedText lightColor="white" darkColor="white" type="defaultSemiBold">Create Habit</ThemedText>
             </TouchableOpacity>
           </View>
         </ScrollView>

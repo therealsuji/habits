@@ -17,14 +17,15 @@ import {
   containerStyles,
   globalStyles,
 } from "@/styles/globalStyles";
-import { useObservable } from "@legendapp/state/react";
+import { use$ } from "@legendapp/state/react";
 import { habitStore$ } from "@/store/habitStore";
 
 export default function HabitDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const habitId = id as string;
-  const habit = useObservable(() => habitStore$.getHabit(habitId)).get();
+  const habit = use$(habitStore$.getHabit(habitId));
+
   const [activeTab, setActiveTab] = useState("details");
 
   const deleteHabit = () => {
@@ -106,6 +107,7 @@ export default function HabitDetailsScreen() {
 
             <TouchableOpacity
               style={[buttonStyles.actionButton, buttonStyles.editButton]}
+              onPress={() => router.push(`/edit-habit?id=${habitId}`)}
             >
               <ThemedText style={buttonStyles.actionButtonText}>
                 Edit Habit
