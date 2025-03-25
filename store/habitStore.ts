@@ -4,13 +4,24 @@ import { configureSynced, syncObservable } from "@legendapp/state/sync";
 import Storage from "expo-sqlite/kv-store";
 import uuid from "react-native-uuid"; // Importing uuid for unique ID generation
 import { isSameDay } from "date-fns";
+
 interface Habit {
   id: string;
   name: string;
   streak: number;
   description: string;
   entries: HabitEntry[];
+  repetition: Repetition;
 }
+
+export type Repetition =
+  | { type: "daily"; time: string }
+  | {
+      type: "weekly";
+      days: Array<"M" | "T" | "W" | "Th" | "F" | "Sa" | "Su">;
+      time: string;
+    }
+  | { type: "interval"; interval: number; time: string };
 
 interface HabitEntry {
   id: string;
@@ -55,11 +66,18 @@ export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
   },
   addHabit: (habit) => {
     const id = uuid.v4() as string; // Generate unique ID
+
+    // Set default repetition if not provided
+    const defaultRepetition = {
+      type: "daily",
+    };
+
     const newHabit = {
       ...habit,
       id,
       streak: 0, // Initialize streak to 0
       entries: [],
+      repetition: habit.repetition || defaultRepetition,
     };
 
     habitStore$.habits.push(newHabit);
