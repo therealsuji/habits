@@ -59,6 +59,28 @@ export default function CreateHabitScreen() {
     }
   };
 
+  const formatTimeFor12Hour = (time24: string | undefined) => {
+    if (!time24) return "";
+    
+    const [hours24, minutes] = time24.split(":");
+    const hours = parseInt(hours24);
+    const period = hours >= 12 ? "PM" : "AM";
+    const hours12 = hours % 12 || 12;
+    
+    return `${hours12}:${minutes} ${period}`;
+  };
+
+  // Create date object from time string
+  const getTimePickerDate = () => {
+    if (!time) return new Date();
+    
+    const [hours, minutes] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    return date;
+  };
+
   const handleCreate = () => {
     let repetition: Repetition;
     if (!time) {
@@ -200,7 +222,7 @@ export default function CreateHabitScreen() {
                   className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 px-4 border border-gray-200 dark:border-gray-700 flex-1"
                   onPress={() => setShowTimePicker(true)}
                 >
-                  <ThemedText>{time || "Select time"}</ThemedText>
+                  <ThemedText>{time ? formatTimeFor12Hour(time) : "Select time"}</ThemedText>
                 </TouchableOpacity>
                 
                 {time && (
@@ -224,9 +246,9 @@ export default function CreateHabitScreen() {
                 </View>
                 
                 <DateTimePicker
-                  value={time ? new Date(`2000-01-01T${time}`) : new Date()}
+                  value={getTimePickerDate()}
                   mode="time"
-                  is24Hour={true}
+                  is24Hour={false}
                   display="spinner"
                   onChange={handleTimeChange}
                   style={{ height: 120 }}

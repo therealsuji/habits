@@ -4,8 +4,13 @@ import { configureSynced, syncObservable } from "@legendapp/state/sync";
 import Storage from "expo-sqlite/kv-store";
 import uuid from "react-native-uuid"; // Importing uuid for unique ID generation
 import { isSameDay } from "date-fns";
+import {
+  cancelAllNotifications,
+  cancelNotification,
+  scheduleNotification,
+} from "../hooks/useNotifications";
 
-interface Habit {
+export interface Habit {
   id: string;
   name: string;
   streak: number;
@@ -42,6 +47,7 @@ interface HabitStore {
     habitId: string,
     date: Date
   ) => Observable<HabitEntry> | undefined;
+  clearAllData: () => void;
 }
 
 export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
@@ -81,16 +87,25 @@ export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
     };
 
     habitStore$.habits.push(newHabit);
+
+    // Schedule notification for the new habit
+    scheduleNotification(newHabit);
   },
   updateHabit: (habit: Habit) => {
     const index = habitStore$.habits.get().findIndex((h) => h.id === habit.id);
     habitStore$.habits[index].set(habit);
+
+    // Update notification for the habit
+    scheduleNotification(habit);
   },
   deleteHabit: (id: string) => {
     const index = habitStore$.habits
       .get()
       .findIndex((habit) => habit.id === id);
+    const habit = habitStore$.habits[index].get();
     habitStore$.habits[index].delete();
+    // Cancel notification for deleted habit
+    cancelNotification(habit);
   },
   getHabit: (id) => {
     return habitStore$.habits.find((habit) => habit.id.get() === id);
@@ -101,6 +116,10 @@ export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
       return habit.entries.find((entry) => isSameDay(entry.date.get(), date));
     }
     return undefined;
+  },
+  clearAllData: () => {
+    habitStore$.habits.set([]);
+    cancelAllNotifications();
   },
 });
 
