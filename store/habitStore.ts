@@ -43,6 +43,8 @@ interface HabitStore {
   deleteHabit: (id: string) => void;
   getHabit: (id: string) => Observable<Habit> | undefined;
   addHabitEntry: (habitEntry: Omit<HabitEntry, "id">) => void;
+  allHabits: () => Habit[];
+  upcomingHabits: () => Habit[];
   getEntryForDate: (
     habitId: string,
     date: Date
@@ -121,6 +123,15 @@ export const habitStore$: Observable<HabitStore> = observable<HabitStore>({
     habitStore$.habits.set([]);
     cancelAllNotifications();
   },
+  allHabits: () => habitStore$.habits.get(),
+  //Only habits that dont have an entry for today
+  upcomingHabits: () =>
+    habitStore$.habits
+      .get()
+      .filter((habit) => {
+        const entry = habit.entries.find((entry) => isSameDay(entry.date, new Date()));
+        return !entry;
+      }),
 });
 
 const persistOptions = configureSynced({

@@ -1,20 +1,16 @@
 import { useState } from "react";
-import {
-  TextInput,
-  TouchableOpacity,
-  View,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import { MaterialIcons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { ThemedTextInput } from "@/components/ThemedTextInput";
+import { ThemedPicker } from "@/components/ThemedPicker";
+import { ThemedButton } from "@/components/ThemedButton";
 import { habitStore$, Repetition } from "@/store/habitStore";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateHabitScreen() {
   const router = useRouter();
@@ -119,9 +115,11 @@ export default function CreateHabitScreen() {
     <SafeAreaView className="flex-1">
       <ThemedView className="flex-1 px-4">
         <View className="flex-row justify-between items-center mb-5">
-          <TouchableOpacity onPress={() => router.back()} className="py-2">
-            <ThemedText>← Back</ThemedText>
-          </TouchableOpacity>
+          <ThemedButton
+            title="← Back"
+            variant="outline"
+            onPress={() => router.back()}
+          />
         </View>
         <ScrollView className="flex-1">
           <ThemedText className="text-2xl font-bold mb-6">
@@ -132,12 +130,10 @@ export default function CreateHabitScreen() {
             <ThemedText className="text-base font-medium mb-2">
               Habit Name
             </ThemedText>
-            <TextInput
-              className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 px-4 text-base mb-5 border border-gray-200 dark:border-gray-700"
+            <ThemedTextInput
               value={habitName}
               onChangeText={setHabitName}
               placeholder="e.g., Morning Meditation"
-              placeholderTextColor="#999"
             />
           </View>
 
@@ -145,14 +141,13 @@ export default function CreateHabitScreen() {
             <ThemedText className="text-base font-medium mb-2">
               Description
             </ThemedText>
-            <TextInput
-              className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 px-4 text-base mb-5 border border-gray-200 dark:border-gray-700 min-h-[120px]"
+            <ThemedTextInput
               value={habitDescription}
               onChangeText={setHabitDescription}
               placeholder="Describe your habit and its goals"
-              placeholderTextColor="#999"
               multiline
-              numberOfLines={4}
+              textAlignVertical="top"
+              numberOfLines={2}
             />
           </View>
 
@@ -160,17 +155,16 @@ export default function CreateHabitScreen() {
             <ThemedText className="text-base font-medium mb-2">
               Repetition Type
             </ThemedText>
-            <Picker
+            <ThemedPicker
               selectedValue={repetitionType}
-              onValueChange={(itemValue: "daily" | "weekly" | "interval") =>
-                setRepetitionType(itemValue)
+              onValueChange={(itemValue) =>
+                setRepetitionType(itemValue as "daily" | "weekly" | "interval")
               }
-              className="bg-gray-100 dark:bg-gray-800 rounded-lg"
             >
-              <Picker.Item label="Daily" value="daily" />
-              <Picker.Item label="Weekly" value="weekly" />
-              <Picker.Item label="Custom Interval" value="interval" />
-            </Picker>
+              <ThemedPicker.Item label="Daily" value="daily" />
+              <ThemedPicker.Item label="Weekly" value="weekly" />
+              <ThemedPicker.Item label="Custom Interval" value="interval" />
+            </ThemedPicker>
           </View>
 
           {repetitionType === "weekly" && (
@@ -180,7 +174,7 @@ export default function CreateHabitScreen() {
               </ThemedText>
               <View className="flex-row flex-wrap">
                 {days.map((day) => (
-                  <TouchableOpacity
+                  <Pressable
                     key={day}
                     className={`p-3 m-1 rounded-md ${
                       selectedDays.includes(day)
@@ -194,7 +188,7 @@ export default function CreateHabitScreen() {
                     >
                       {day}
                     </ThemedText>
-                  </TouchableOpacity>
+                  </Pressable>
                 ))}
               </View>
             </View>
@@ -205,8 +199,7 @@ export default function CreateHabitScreen() {
               <ThemedText className="text-base font-medium mb-2">
                 Repeat every X days
               </ThemedText>
-              <TextInput
-                className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 px-4 text-base mb-2 border border-gray-200 dark:border-gray-700"
+              <ThemedTextInput
                 value={interval.toString()}
                 onChangeText={(text) => setInterval(parseInt(text) || 1)}
                 keyboardType="number-pad"
@@ -221,33 +214,31 @@ export default function CreateHabitScreen() {
 
             {!showTimePicker ? (
               <View className="flex-row items-center">
-                <TouchableOpacity
-                  className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 px-4 border border-gray-200 dark:border-gray-700 flex-1"
+                <ThemedButton
+                  title={time ? formatTimeFor12Hour(time) : "Select time"}
+                  variant="outline"
                   onPress={() => setShowTimePicker(true)}
-                >
-                  <ThemedText>
-                    {time ? formatTimeFor12Hour(time) : "Select time"}
-                  </ThemedText>
-                </TouchableOpacity>
+                  style={{ flex: 1 }}
+                />
 
                 {time && (
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => setTime(undefined)}
                     className="ml-2 p-2 bg-gray-200 dark:bg-gray-700 rounded-full"
                   >
                     <MaterialIcons name="close" size={20} color="#666" />
-                  </TouchableOpacity>
+                  </Pressable>
                 )}
               </View>
             ) : (
               <View className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
                 <View className="flex-row justify-end items-center mb-2">
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => setShowTimePicker(false)}
                     className="p-1"
                   >
                     <MaterialIcons name="close" size={30} color="#666" />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
 
                 <DateTimePicker
@@ -263,28 +254,18 @@ export default function CreateHabitScreen() {
           </View>
 
           <View className="flex-row justify-between items-center mt-6 mb-10">
-            <TouchableOpacity
-              className="px-5 py-3 border border-gray-300 dark:border-gray-600 rounded-md"
+            <ThemedButton
+              title="Cancel"
+              variant="outline"
               onPress={() => router.back()}
-            >
-              <ThemedText>Cancel</ThemedText>
-            </TouchableOpacity>
+            />
 
-            <TouchableOpacity
-              className={`px-5 py-3 rounded-md ${
-                !habitName.trim() || !time ? "bg-gray-400" : "bg-green-500"
-              }`}
+            <ThemedButton
+              title="Create Habit"
               onPress={handleCreate}
               disabled={!habitName.trim() || !time}
-            >
-              <ThemedText
-                lightColor="white"
-                darkColor="white"
-                type="defaultSemiBold"
-              >
-                Create Habit
-              </ThemedText>
-            </TouchableOpacity>
+              style={!habitName.trim() || !time ? { opacity: 0.5 } : undefined}
+            />
           </View>
         </ScrollView>
       </ThemedView>

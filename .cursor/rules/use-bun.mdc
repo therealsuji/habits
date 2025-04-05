@@ -1,0 +1,11 @@
+---
+description: When adding a new package
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+- Use bun as package manager
+- bunx for installing a executable
+- if the package requires expo specific install use bunx expo install <pacakge-here>
