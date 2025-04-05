@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  SafeAreaView,
-  TouchableOpacity,
+   TouchableOpacity,
   View,
   TextInput,
   Alert,
@@ -17,6 +16,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { useObservable } from "@legendapp/state/react";
 import { habitStore$, Repetition } from "@/store/habitStore";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditHabitScreen() {
   const router = useRouter();
@@ -123,7 +123,7 @@ export default function EditHabitScreen() {
 
   if (!habit) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+      <SafeAreaView className="flex-1">
         <ThemedView className="flex-1 px-4">
           <ThemedText>Loading habit...</ThemedText>
         </ThemedView>
@@ -132,7 +132,7 @@ export default function EditHabitScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+    <SafeAreaView className="flex-1">
       <ThemedView className="flex-1 px-4">
         <View className="flex-row justify-between items-center mb-5">
           <TouchableOpacity

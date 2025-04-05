@@ -1,24 +1,12 @@
-import { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  View,
-  FlatList,
-  Dimensions,
-  Alert,
-} from "react-native";
+import { useState } from "react";
+import { TouchableOpacity, View, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import {
-  buttonStyles,
-  containerStyles,
-  globalStyles,
-} from "@/styles/globalStyles";
 import { use$ } from "@legendapp/state/react";
 import { habitStore$ } from "@/store/habitStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HabitDetailsScreen() {
   const router = useRouter();
@@ -54,86 +42,88 @@ export default function HabitDetailsScreen() {
 
   if (!habit) {
     return (
-      <SafeAreaView style={containerStyles.container}>
-        <ThemedView style={containerStyles.content}>
-          <ThemedText>Loading habit details...</ThemedText>
-        </ThemedView>
-      </SafeAreaView>
+      <ThemedView className="flex-1 p-4">
+        <ThemedText>Loading habit details...</ThemedText>
+      </ThemedView>
     );
   }
 
   return (
-    <SafeAreaView style={containerStyles.container}>
-      <ThemedView style={containerStyles.content}>
-        <View style={globalStyles.header}>
+    <SafeAreaView className="flex-1">
+      <ThemedView className="flex-1 p-4">
+        <View className="flex-row items-center justify-between mb-5">
           <TouchableOpacity
             onPress={() => router.back()}
-            style={buttonStyles.backButton}
+            className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg"
           >
             <ThemedText>← Back</ThemedText>
           </TouchableOpacity>
         </View>
         <View>
-          <ThemedText style={globalStyles.headerTitle}>{habit.name}</ThemedText>
+          <ThemedText className="text-2xl font-bold">{habit.name}</ThemedText>
         </View>
 
-        <View style={styles.streakCard}>
-          <ThemedText style={styles.streakText}>Current Streak</ThemedText>
-          <ThemedText style={styles.streakCount}>
+        <View className="bg-primary rounded-lg p-5 items-center mb-5 w-full">
+          <ThemedText className="text-white text-base text-center flex-shrink">
+            Current Streak
+          </ThemedText>
+          <ThemedText className="pt-2.5 text-white text-3xl font-bold">
             {habit.streak} days
           </ThemedText>
         </View>
 
-        <View style={styles.tabContainer}>
+        <View className="flex-row mb-5 border-b border-gray-200 dark:border-gray-700">
           <TouchableOpacity
-            style={[styles.tab, activeTab === "details" && styles.activeTab]}
+            className={`flex-1 py-3 items-center ${
+              activeTab === "details" ? "border-b-3 border-primary" : ""
+            }`}
             onPress={() => setActiveTab("details")}
           >
             <ThemedText
-              style={[
-                styles.tabText,
-                activeTab === "details" && styles.activeTabText,
-              ]}
+              className={`text-base ${
+                activeTab === "details" ? "font-bold text-primary" : ""
+              }`}
             >
               Details
             </ThemedText>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.detailsContainer}>
-          <ThemedText style={styles.sectionTitle}>Description</ThemedText>
-          <ThemedText style={styles.description}>
+        <View className="flex-1">
+          <ThemedText className="text-lg font-medium mb-2.5">
+            Description
+          </ThemedText>
+          <ThemedText className="text-base mb-5 leading-6">
             {habit.description}
           </ThemedText>
 
-          <View style={styles.buttonRow}>
+          <View className="flex-row justify-between">
             <TouchableOpacity
-              style={buttonStyles.actionButton}
-              className={"disabled:opacity-50"}
+              className="bg-primary py-3.5 px-5 rounded-lg flex-1 mr-2.5 disabled:opacity-50"
               onPress={markHabitComplete}
               disabled={!!entryForDate}
             >
-              <ThemedText style={buttonStyles.actionButtonText}>
+              <ThemedText className="text-white font-medium text-base">
                 Mark Complete
               </ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[buttonStyles.actionButton, buttonStyles.editButton]}
+              className="bg-blue-500 py-3.5 px-5 rounded-lg flex-1 ml-2.5"
               onPress={() => router.push(`/edit-habit?id=${habitId}`)}
             >
-              <ThemedText style={buttonStyles.actionButtonText}>
+              <ThemedText className="text-white font-medium text-base">
                 Edit Habit
               </ThemedText>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.deleteButtonContainer}>
+          <View className="mt-8 items-center">
             <TouchableOpacity
-              style={styles.deleteButton}
+              className="bg-red-500 py-3 px-6 rounded-lg"
               onPress={confirmDelete}
             >
-              <ThemedText style={styles.deleteButtonText}>
+              <ThemedText className="text-white font-semibold text-base">
                 Delete Habit
               </ThemedText>
             </TouchableOpacity>
@@ -143,98 +133,3 @@ export default function HabitDetailsScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  streakCard: {
-    backgroundColor: "#4CAF50",
-    borderRadius: 10,
-    padding: 20,
-    alignItems: "center",
-    marginBottom: 20,
-    width: "100%",
-  },
-  streakText: {
-    color: "white",
-    fontSize: 16,
-    textAlign: "center",
-    flexShrink: 1,
-  },
-  streakCount: {
-    paddingTop: 10,
-    color: "white",
-    fontSize: 32,
-    fontWeight: "bold",
-  },
-  tabContainer: {
-    flexDirection: "row",
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  activeTab: {
-    borderBottomWidth: 3,
-    borderBottomColor: "#4CAF50",
-  },
-  tabText: {
-    fontSize: 16,
-  },
-  activeTabText: {
-    fontWeight: "bold",
-    color: "#4CAF50",
-  },
-  detailsContainer: {
-    flex: 1,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "500",
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    marginBottom: 20,
-    lineHeight: 24,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  tipsList: {
-    paddingBottom: 20,
-  },
-  tipCard: {
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-  },
-  tipTitle: {
-    fontSize: 18,
-    fontWeight: "500",
-    marginBottom: 8,
-  },
-  tipDescription: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  deleteButtonContainer: {
-    marginTop: 30,
-    alignItems: "center",
-  },
-  deleteButton: {
-    backgroundColor: "#ff5252",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  deleteButtonText: {
-    color: "white",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-});

@@ -35,7 +35,7 @@ async function requestNotificationPermissions() {
     finalStatus = status;
   }
   if (finalStatus !== "granted") {
-    alert("User has not granted permission for notifications");
+    alert("We need notification permission to remind you to complete your habits");
     return;
   }
 }

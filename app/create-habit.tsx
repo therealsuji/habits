@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  SafeAreaView,
   TextInput,
   TouchableOpacity,
   View,
@@ -10,11 +9,12 @@ import {
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from "@expo/vector-icons";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { habitStore$, Repetition } from "@/store/habitStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateHabitScreen() {
   const router = useRouter();
@@ -61,20 +61,20 @@ export default function CreateHabitScreen() {
 
   const formatTimeFor12Hour = (time24: string | undefined) => {
     if (!time24) return "";
-    
+
     const [hours24, minutes] = time24.split(":");
     const hours = parseInt(hours24);
     const period = hours >= 12 ? "PM" : "AM";
     const hours12 = hours % 12 || 12;
-    
+
     return `${hours12}:${minutes} ${period}`;
   };
 
   // Create date object from time string
   const getTimePickerDate = () => {
     if (!time) return new Date();
-    
-    const [hours, minutes] = time.split(':').map(Number);
+
+    const [hours, minutes] = time.split(":").map(Number);
     const date = new Date();
     date.setHours(hours);
     date.setMinutes(minutes);
@@ -106,8 +106,6 @@ export default function CreateHabitScreen() {
       };
     }
 
-    
-
     habitStore$.addHabit({
       name: habitName,
       description: habitDescription,
@@ -118,13 +116,10 @@ export default function CreateHabitScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+    <SafeAreaView className="flex-1">
       <ThemedView className="flex-1 px-4">
         <View className="flex-row justify-between items-center mb-5">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="py-2"
-          >
+          <TouchableOpacity onPress={() => router.back()} className="py-2">
             <ThemedText>← Back</ThemedText>
           </TouchableOpacity>
         </View>
@@ -134,7 +129,9 @@ export default function CreateHabitScreen() {
           </ThemedText>
 
           <View className="w-full mt-4">
-            <ThemedText className="text-base font-medium mb-2">Habit Name</ThemedText>
+            <ThemedText className="text-base font-medium mb-2">
+              Habit Name
+            </ThemedText>
             <TextInput
               className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 px-4 text-base mb-5 border border-gray-200 dark:border-gray-700"
               value={habitName}
@@ -145,7 +142,9 @@ export default function CreateHabitScreen() {
           </View>
 
           <View className="mb-5">
-            <ThemedText className="text-base font-medium mb-2">Description</ThemedText>
+            <ThemedText className="text-base font-medium mb-2">
+              Description
+            </ThemedText>
             <TextInput
               className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 px-4 text-base mb-5 border border-gray-200 dark:border-gray-700 min-h-[120px]"
               value={habitDescription}
@@ -158,7 +157,9 @@ export default function CreateHabitScreen() {
           </View>
 
           <View className="mb-5">
-            <ThemedText className="text-base font-medium mb-2">Repetition Type</ThemedText>
+            <ThemedText className="text-base font-medium mb-2">
+              Repetition Type
+            </ThemedText>
             <Picker
               selectedValue={repetitionType}
               onValueChange={(itemValue: "daily" | "weekly" | "interval") =>
@@ -174,19 +175,21 @@ export default function CreateHabitScreen() {
 
           {repetitionType === "weekly" && (
             <View className="mb-5">
-              <ThemedText className="text-base font-medium mb-2">Select Days</ThemedText>
+              <ThemedText className="text-base font-medium mb-2">
+                Select Days
+              </ThemedText>
               <View className="flex-row flex-wrap">
                 {days.map((day) => (
                   <TouchableOpacity
                     key={day}
                     className={`p-3 m-1 rounded-md ${
-                      selectedDays.includes(day) 
-                        ? "bg-blue-500" 
+                      selectedDays.includes(day)
+                        ? "bg-blue-500"
                         : "bg-gray-200 dark:bg-gray-700"
                     }`}
                     onPress={() => toggleDay(day)}
                   >
-                    <ThemedText 
+                    <ThemedText
                       className={selectedDays.includes(day) ? "text-white" : ""}
                     >
                       {day}
@@ -215,18 +218,20 @@ export default function CreateHabitScreen() {
             <ThemedText className="text-base font-medium mb-2">
               Reminder Time <ThemedText className="text-red-500">*</ThemedText>
             </ThemedText>
-            
+
             {!showTimePicker ? (
               <View className="flex-row items-center">
                 <TouchableOpacity
                   className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 px-4 border border-gray-200 dark:border-gray-700 flex-1"
                   onPress={() => setShowTimePicker(true)}
                 >
-                  <ThemedText>{time ? formatTimeFor12Hour(time) : "Select time"}</ThemedText>
+                  <ThemedText>
+                    {time ? formatTimeFor12Hour(time) : "Select time"}
+                  </ThemedText>
                 </TouchableOpacity>
-                
+
                 {time && (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={() => setTime(undefined)}
                     className="ml-2 p-2 bg-gray-200 dark:bg-gray-700 rounded-full"
                   >
@@ -237,14 +242,14 @@ export default function CreateHabitScreen() {
             ) : (
               <View className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
                 <View className="flex-row justify-end items-center mb-2">
-                   <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={() => setShowTimePicker(false)}
                     className="p-1"
                   >
                     <MaterialIcons name="close" size={30} color="#666" />
                   </TouchableOpacity>
                 </View>
-                
+
                 <DateTimePicker
                   value={getTimePickerDate()}
                   mode="time"
@@ -262,9 +267,7 @@ export default function CreateHabitScreen() {
               className="px-5 py-3 border border-gray-300 dark:border-gray-600 rounded-md"
               onPress={() => router.back()}
             >
-              <ThemedText>
-                Cancel
-              </ThemedText>
+              <ThemedText>Cancel</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -274,7 +277,11 @@ export default function CreateHabitScreen() {
               onPress={handleCreate}
               disabled={!habitName.trim() || !time}
             >
-              <ThemedText lightColor="white" darkColor="white" type="defaultSemiBold">
+              <ThemedText
+                lightColor="white"
+                darkColor="white"
+                type="defaultSemiBold"
+              >
                 Create Habit
               </ThemedText>
             </TouchableOpacity>

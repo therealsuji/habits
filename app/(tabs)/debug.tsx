@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, View, StyleSheet, SafeAreaView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Notifications from "expo-notifications";
 import { useObservable } from "@legendapp/state/react";
@@ -82,7 +82,7 @@ export default function DebugScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, }}>
+    <View>
       <StatusBar style="auto" />
       <ScrollView className="p-4" style={{ marginBottom: insets.bottom }}>
         <ThemedText className="text-2xl font-bold mb-6">
@@ -147,6 +147,6 @@ export default function DebugScreen() {
           })
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
