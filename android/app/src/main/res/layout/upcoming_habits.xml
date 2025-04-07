@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         tools:text="@string/widget_preview_title" />
 
@@ -26,17 +26,20 @@
         android:id="@+id/widget_task"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:textColor="#FFFFFF"
         android:textSize="14sp"
         tools:text="@string/widget_preview_task" />
 
     <TextView
         android:id="@+id/widget_time"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:textColor="#FFFFFF"
+        android:background="@drawable/time_background"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
         android:textSize="12sp"
         tools:text="@string/widget_preview_time" />
 

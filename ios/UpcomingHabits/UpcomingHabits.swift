@@ -89,12 +89,12 @@ struct UpcomingHabitsEntryView : View {
         if let time = habit.time {
           Text(time)
             .font(.system(size: 12))
-            .foregroundColor(.black)
+            .foregroundColor(.white)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(
               Capsule()
-                .fill(Color.white)
+                .fill(Color(hex: 0xFFFFFF,alpha: 0.25))
             )
         } else {
           Color.clear
@@ -126,6 +126,19 @@ struct UpcomingHabits: Widget {
     .supportedFamilies([.systemSmall])
   }
 }
+
+extension Color {
+    init(hex: UInt, alpha: Double = 1) {
+        self.init(
+            .sRGB,
+            red: Double((hex >> 16) & 0xff) / 255,
+            green: Double((hex >> 08) & 0xff) / 255,
+            blue: Double((hex >> 00) & 0xff) / 255,
+            opacity: alpha
+        )
+    }
+}
+
 
 #Preview(as: .systemSmall) {
   UpcomingHabits()
