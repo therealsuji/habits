@@ -13,16 +13,18 @@ struct Provider: TimelineProvider {
     let defaults = UserDefaults(suiteName: "group.your.app.identifier")
     guard let habitData = defaults?.data(forKey: "nextHabit"),
           let habit = try? JSONDecoder().decode(Habit.self, from: habitData) else {
-      return Habit(title: "Your All good for the day",time: nil,task: nil)
+      return Habit(title: NSLocalizedString("default_title", comment: "Default title when no habit is available"),
+                  time: nil,
+                  task: nil)
     }
     return habit
   }
   
   func placeholder(in context: Context) -> SimpleEntry {
     SimpleEntry(date: Date(), habit: Habit(
-      title: "Morning Routine",
-      time: "in 20 Mins",
-      task: "Morning meditation"
+      title: NSLocalizedString("placeholder_title", comment: "Placeholder habit title"),
+      time: NSLocalizedString("placeholder_time", comment: "Placeholder habit time"),
+      task: NSLocalizedString("placeholder_task", comment: "Placeholder habit task")
     ))
   }
   
@@ -120,8 +122,8 @@ struct UpcomingHabits: Widget {
           .background()
       }
     }
-    .configurationDisplayName("Habits")
-    .description("A widget that shows your upcoming habits")
+    .configurationDisplayName(NSLocalizedString("widget_display_name", comment: "Widget display name"))
+    .description(NSLocalizedString("widget_description", comment: "Widget description"))
     .contentMarginsDisabled()
     .supportedFamilies([.systemSmall])
   }
@@ -144,9 +146,9 @@ extension Color {
   UpcomingHabits()
 } timeline: {
   SimpleEntry(date: .now, habit: Habit(
-    title: "Lets start right now 🔥",
-    time: "In 20 Mins",
-    task: "Morning meditation"
+    title: NSLocalizedString("preview_title", comment: "Preview habit title"),
+    time: NSLocalizedString("preview_time", comment: "Preview habit time"),
+    task: NSLocalizedString("preview_task", comment: "Preview habit task")
   ))
 }
 
